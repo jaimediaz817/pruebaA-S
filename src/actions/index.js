@@ -5,7 +5,7 @@ let client = Client.instance;
 client.settings = {
     clientId: '298f9dba1a5e432fa3825d9e74d0cc9d',
     secretId: '648e0df7a483469cbe28709540cdcd47',
-    scopes: ['user-read-private user-follow-modify user-follow-read user-library-read user-top-read'],
+    scopes: ['user-read-private user-follow-modify user-follow-read user-library-read user-top-read playlist-modify-public'],
     redirect_uri: 'http://localhost:3000/'
 }
 
@@ -14,17 +14,17 @@ client.settings = {
 
 export const checkSignIn = () => {
     console.log("action works!::: ", client._clientId)
-    return (dispatch, getState) => {        
+    return async (dispatch, getState) => {        
         if (sessionStorage.token) {
             // propiedad de instancia
             client.token = sessionStorage.token
         } else if (window.location.hash.split('&')[0].split('=')[1]) {
 
             sessionStorage.token = window.location.hash.split('&')[0].split('=')[1];            
-            client.token = sessionStorage.token;
+            client.token =  sessionStorage.token;
         } else {
             // si no hay nadie logueado
-            client.login()
+             await client.login()
                 .then( url => {
                     console.log("login: ", url);
                     // para que spotify se haga presente en el proyecto
@@ -61,6 +61,7 @@ export const searchSongs = (trackName) => {
 
 // Payload:
 const completeSong = (data) => { return { type: "COMPLETE_SONG", success: true , payload: data}};
+const setToken = (token) => { return { type: "SET_TOKEN", success: true , payload: token}};
 export const playTrack = (songId)  =>{
     return (dispatch, getState) =>{
         console.log("token: "+ client.token + " , songid: "+ songId)
@@ -69,25 +70,29 @@ export const playTrack = (songId)  =>{
         axios.get('https://api.spotify.com/v1/tracks/'.concat( songId ), { headers: { "Authorization": 'Bearer ' + client.token , 'Content-Type': 'application/x-www-form-urlencoded'} })
             .then(res => {
                 dispatch(completeSong(res.data));
+                dispatch(setToken(client.token))
             })
             .catch(err=> console.error(err));
     }
 }
 
 
-
 //  T R A E R     D A T O S     U S U A R I O 
 const completeUser = (data) => { return { type: "GET_DATA_USER", success: true , payload: data}};
+const setUserId = (idUser) => { return { type: "SET_USER_ID" , payload: idUser}};
 
 export const getDataUser = () => {
-    return (dispatch, getState) => {
+    return async (dispatch, getState) => {
         dispatch(startFetch());
-        axios.get('https://api.spotify.com/v1/me',  { headers: { "Authorization": 'Bearer ' + client.token , 'Content-Type': 'application/json'} })
+        
+         await axios.get('https://api.spotify.com/v1/me',  { headers: { "Authorization": 'Bearer ' + client.token , 'Content-Type': 'application/json'} })
             .then(usua =>{
+                dispatch(setUserId(usua.data.id));
                 console.log("usuario: ", usua.data.id)
                 sessionStorage.userId = usua.data.id
-                console.log("usuario:session storage ", sessionStorage.userId)
-                dispatch(completeUser(usua.data))
+                
+                console.log("usuario:session storage ", sessionStorage.userId)                
+                dispatch(completeUser(usua.data));
             })
             .catch(err => console.error(err));
     }
@@ -97,10 +102,13 @@ export const getDataUser = () => {
 //  G E T     M Y     P L A Y    L I S T  
 const completeGetMyPLaylist = (data) => { return { type: "GET_MY_PLAYLIST", success: true , payload: data}};
 export const getMyPLayList = (usuarioId) => {
-    return (dispatch, getState) =>{
-        dispatch(startFetch());
-        axios.get('https://api.spotify.com/v1/users/'+ sessionStorage.userId + '/playlists',  { headers: { "Authorization": 'Bearer ' + client.token } })
+    console.log("user id: ", usuarioId)
+    return async (dispatch, getState) =>{
+        await dispatch(startFetch());
+        //const varUser = await sessionStorage.userId;
+        await axios.get('https://api.spotify.com/v1/users/'+ sessionStorage.userId + '/playlists',  { headers: { "Authorization": 'Bearer ' + client.token } })
             .then(myPLayList => {
+                console.log(" usuario id param: ", getState)
                 console.log("myplaylist ::::::::::::   ", myPLayList.data);
                 dispatch(completeGetMyPLaylist(myPLayList.data))
             })
@@ -109,13 +117,15 @@ export const getMyPLayList = (usuarioId) => {
 } 
 
 
-// GET TRACKS
+//   G E T     T R A C K S 
 const completeTracks = (data) => { return {  type: "GET_TRACKS", success:true, payload: data}};
 export const getTracksByPlayList = (path) => {
-    return (dispatch, getState) => {
-        axios.get(path, { headers: { "Authorization": 'Bearer ' + client.token } })
+    return async (dispatch, getState) => {
+        await axios.get(path, { headers: { "Authorization": 'Bearer ' + client.token, 'Content-Type': 'application/json' } })
             .then(res =>{
+                console.log("FROM ACTIONS: gettracks : ", res)
                 dispatch(completeTracks(res.data));
+                dispatch(setToken(client.token));
             })
             .catch(err => console.error(err));
     }
@@ -126,17 +136,18 @@ const completeAdd = (data) => { return { type: "ADD_PLAYLIST", success: true, pa
 export const  savePlaylist = (obj) => {
     return (dispatch, getState) => {
         console.log("token:::: " , sessionStorage.token);
-        axios.post('https://api.spotify.com/v1/users/'+ sessionStorage.userId + '/playlists',  { headers: { "Authorization": 'Bearer ' + sessionStorage.token, 'Content-Type': 'application/json' } }, 
+        axios.post('https://api.spotify.com/v1/users/'+ sessionStorage.userId + '/playlists', 
         {
-            name: obj.name,
+            name: "obj.name",
             public: true,
             collaborative: true,
-            description: obj.description
+            description: "obj.description"
+        },
+        { headers: { "Authorization": 'Bearer ' + sessionStorage.token, 'Content-Type': 'application/json' } })
+        .then(res =>{
+            console.log("save", res)
+            dispatch(completeAdd(res.data));
         })
-            .then(res =>{
-                console.log("save", res)
-                dispatch(completeAdd(res.data));
-            })
-            .catch(err => console.error(err));
+        .catch(err => console.error("errrrrrrrrrrrrrrrrrrrrrrrrrrrr", err));
     }
 }

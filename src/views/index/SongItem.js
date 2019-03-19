@@ -13,6 +13,7 @@ class SongItem extends Component {
 
     componentDidMount() {
         //this.props.checkSignIn();
+        console.log("marh ::::::::::::::::::::: ")
     }
 
 
@@ -34,14 +35,16 @@ class SongItem extends Component {
 
         return (
             <li className="collection-item avatar link-song-item__content">
-                <Link to={"player/" + songId + tokenPath } className="link-song-item">
+                {/*<Link to={"player/" + songId + tokenPath } className="link-song-item">*/}
+                <a href={"/player/" + songId + tokenPath } className="link-song-item">
                     {/* Image */}
                     <img alt="avatar" src={ albumPhoto } className="circle" />
                     <p className="song-name"><strong>Nombre de la canción:</strong> { songName }</p>
                     <p className="artist-name">Nombre del artista: { artistName }</p>
                     <p className="">Popularidad: { _popularity }</p>
                     <span href="#!" className="secondary-content"><i className="material-icons">grade</i></span>
-                </Link>
+                {/*</Link>*/}
+                </a>
             </li>
         );
     }

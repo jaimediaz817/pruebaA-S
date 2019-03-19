@@ -17,8 +17,9 @@ export default function player (state=[], action) {
         case "COMPLETE_SONG":
             return action;
 
-        case "GET_DATA_USER":
-            return action;
+        case "SET_TOKEN":
+            return{...state, tokenId: action.payload}
+            
         default:
             return state;
     }

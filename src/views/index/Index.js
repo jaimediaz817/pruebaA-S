@@ -33,32 +33,43 @@ class Index extends Component {
         // Creación del estado
         this.state = {
             song: '',
+            songInput: '',
             userId: ''
         }
         this.getResulSoungList = this.getResulSoungList.bind(this);
         this.getResultMyPlayList = this.getResultMyPlayList.bind(this);
     }
 
-    componentDidMount() {      
+    async componentDidMount() {   
+        
+        await this.props.checkSignIn();
+        await this.props.getDataUser();
+        
+        await console.log("from INDEX:::: ", this.props.idUsuario)  
+        await console.log("componentWillReceiveProps")
+
+                        
+        await this.props.getMyPLayList(this.props.playlist.userId);
+
     }
 
     componentWillReceiveProps(nextProps) {
-
+        console.log("11")
     }    
 
     componentWillUpdate() {
-
+        console.log("111")
     }
 
     componentDidUpdate() {
-
+        console.log("1111")
     }
 
-    componentWillMount() {
-        this.props.checkSignIn();
-        this.props.getDataUser();
-        
-        this.props.getMyPLayList("test");
+    async componentWillMount() {
+        //this.props.getMyPLayList(this.props.playlist.userId);        
+
+
+
     }
 
     //  P R O C C E S S    T O K E N
@@ -70,7 +81,7 @@ class Index extends Component {
     // R E N D E R   R E S U L T S   L I S T 
     getResulSoungList() {
         const { songsReducer } = this.props;
-
+        console.log("URL ::::::::::::::::::::::::::::::::: ", this.props.match.url)
         if (songsReducer.length > 0) {
             return (
                 songsReducer.map((song, index)=> {
@@ -95,10 +106,10 @@ class Index extends Component {
     // R E N D E R    M Y  P L A Y L I S T  
     getResultMyPlayList() {
         const { playlist } = this.props;
-
-        if (playlist.length > 0) {
+        console.log(">>>>>>>>>>>>>-------------! ", this.props.playlist)
+        if (playlist.myplaylist) {
             return(
-                playlist[0].items.map((listItem, index) => {
+                playlist.myplaylist.items.map((listItem, index) => {
                     return(
                         // name, images, tracks=> href
                         <PlaylistItem
@@ -107,8 +118,8 @@ class Index extends Component {
                             name={listItem.name}
                             image={listItem.images[0].url}
                             tracks={listItem.tracks.href}
-                        />                        
-                        
+                            tokenPath={ this.getTokenPath() }
+                        />
                     );
                 })
             );
@@ -117,6 +128,8 @@ class Index extends Component {
 
     buscarCancionSpotify = (songInput) => {
         //this.props.getDataUser();
+        console.log("buscar: ", songInput)
+        //M.toast({html: 'Operación anulada'});
         this.props.searchSongs(songInput);
         
     }
@@ -130,7 +143,7 @@ class Index extends Component {
 
     // --------------------------------   R E N D E R  ---------------------------------------------
     render() {
-
+        console.log("props from RENDER : ", this.props.player)
         // Obteniendo del estado, la canción que se ha ingresado en al caja de busqueda
         const { songInput } = this.state;
         const { songsReducer } = this.props;
@@ -164,7 +177,6 @@ class Index extends Component {
                             <a className="brand-logo" href="/">
                                 <img src={ logoSpotify } width="180" height="auto" alt="Logo App" />
                             </a>
-                            
 
                             <ul id="nav-mobile" className="right hide-on-med-and-down">
                                 <li><Link to={"/crearPlaylist"}>Crear Playlist</Link></li>
@@ -174,7 +186,6 @@ class Index extends Component {
                             </ul>
                         </div>
                     </div>
-
                 </nav>
 
 
@@ -187,12 +198,12 @@ class Index extends Component {
                                     type="text"
                                     className="inputSearch"
                                     placeholder="Canción"
-                                    onChange={ (e)=> { this.setState({ song: e.target.value })}}
+                                    onChange={ (e)=> { this.setState({ songInput: e.target.value })}}
                                     value= { songInput }
                                 />
                                 <a 
                                     className="waver-effect waves-light btn green"
-                                    onClick={ ()=>  this.props.searchSongs(songInput) }
+                                    onClick={ ()=>  this.buscarCancionSpotify(songInput) }
                                 >
                                     <i className="fa fa-search"></i>
                                 </a>
@@ -200,6 +211,8 @@ class Index extends Component {
                         </div>
                     </div>
                 </div>
+
+
 
                 <div className="container">
                     <div className="row">
@@ -231,14 +244,20 @@ class Index extends Component {
                         {/* S I D E B A R*/}
                         <div className="col s12 m4 l3">
                             <div className="card blue-grey darken-1">
-                                <div className="card-content white-text">
-                                    <div className="avatar avatar-container-user">
-                                        <img src={datosUusario.foto} className="circle avatar-usuario-request"/>
+                                {!this.props.me?(
+                                    <div>Loading...</div>
+                                ):(
+                                    <div className="card-content white-text">
+                                        <div className="avatar avatar-container-user">
+                                            <img src={this.props.me.images[0].url} className="circle avatar-usuario-request"/>
+                                        </div>
+                                        <span className="card-title">Usuario Spotify:  <strong>{ this.props.me.display_name }</strong></span>
+                                        <p>País:  <strong>{ this.props.me.country }</strong></p>
+                                        <p>Correo electrónico:  <strong>{ this.props.me.email }</strong></p>
                                     </div>
-                                    <span className="card-title">Usuario Spotify:  <strong>{ datosUusario.display_name }</strong></span>
-                                    <p>País:  <strong>{ datosUusario.country }</strong></p>
-                                    <p>Correo electrónico:  <strong>{ datosUusario.email }</strong></p>
-                                </div>
+                                )}
+
+
                                 <div className="card-action">
                                 </div>
                             </div>
@@ -258,7 +277,10 @@ function mapStateToProps(state) {
         routes: state.routes,
         songsReducer: state.player,
         usuario: state.player.payload,
-        playlist: state.playlist
+        playlist: state.playlist,
+        me: state.initial.me,
+        idUsuario: state.initial.userId
+
     };
 }
 
@@ -266,8 +288,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         checkSignIn,
-        searchSongs,
         getDataUser,
+        searchSongs,        
         getMyPLayList
     }, dispatch);
 }

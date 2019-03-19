@@ -8,5 +8,5 @@ import playlist from './playlist';
 //import { player } from './player';
 
 export default combineReducers({
-    initial, player, playlist
+    initial, playlist, player
 });

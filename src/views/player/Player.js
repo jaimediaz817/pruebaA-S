@@ -13,6 +13,8 @@ import { bindActionCreators } from 'redux';
 import { playTrack, checkSignIn } from '../../actions';
 
 
+
+
 class Player extends Component {
 
     constructor(props) {
@@ -48,12 +50,13 @@ class Player extends Component {
 
         if (player.type == "COMPLETE_SONG") {
             console.log("OK", player.payload);
+            console.log("token::: >>> :", this.props.pl)
             return(
                 <div>
                     <nav className="green accent-4">
                         <div className="container">
                             <div className="nav-wrapper">
-                                <a className="brand-logo" href="/">
+                                <a className="brand-logo" href={`/#access_token=${this.props.player.tokenId}`}>
                                     <img src={ logoSpotify } width="180" height="auto" alt="Logo App" />
                                 </a>
 
@@ -75,7 +78,7 @@ class Player extends Component {
                                                     <div className="card-image card-reproductor">
                                                         <img src={ player.payload.album.images[0].url } className="imagen-detail"/>
                                                         <span className="card-title">Card Title</span>                                                        
-                                                        <Link to={"/"} className="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">keyboard_backspace</i></Link>
+                                                        <Link to={`/#access_token=${this.props.player.tokenId}`} className="btn-floating halfway-fab waves-effect waves-light red"><i className="material-icons">keyboard_backspace</i></Link>
                                                     </div>
                                                     <div className="card-content">
                                                         <p>
@@ -92,7 +95,7 @@ class Player extends Component {
                                                         {/*
                                                         <h4><strong>Canción: </strong>{ player.payload.name}</h4>                                                        
                                                         */}
-                                                        <i class="material-icons icon-play-song-app">
+                                                        <i className="material-icons icon-play-song-app">
                                                         equalizer
                                                         </i>
                                                         <h6><strong>Total de tracks: </strong><span className="new badge">{  player.payload.album.total_tracks }</span></h6>
@@ -115,7 +118,7 @@ class Player extends Component {
                                             className="btn-floating halfway-fab waves-effect waves-light red"
                                             target="_blank"
                                         >
-                                            <i class="material-icons">insert_link</i>
+                                            <i className="material-icons">insert_link</i>
                                         </a>
                                         {/*player.payload.album.artists[0]*/}
                                     </div>

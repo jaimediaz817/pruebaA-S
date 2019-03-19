@@ -19,9 +19,15 @@ class PlaylistItem extends Component {
         super(props);
     }
 
+    componentDidMount() {
+
+    }
+
+
+
     render() {
         const { id, name, tracks, image } = this.props;
-
+        console.log("tracks by my playlist: ", tracks);
         return (
             <div>
             <li className="collection-item avatar link-song-item__content">
@@ -30,7 +36,7 @@ class PlaylistItem extends Component {
                     <img alt="avatar" src={ image } className="circle" />
                     <p className="song-name"><strong>Nombre de la playList:</strong> { name }</p>
                 </Link>
-            </li>                
+            </li>
             </div>
         );
     }
@@ -39,7 +45,7 @@ class PlaylistItem extends Component {
 //  M A P   S T A T E  T O   P R O P S 
 function mapStateToProps(state) {
     return {
-        playlist: state.playlist
+        playlist: state.playlist.payload
     }
 }
 
