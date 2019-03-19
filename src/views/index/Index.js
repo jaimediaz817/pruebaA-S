@@ -108,15 +108,25 @@ class Index extends Component {
         const { playlist } = this.props;
         console.log(">>>>>>>>>>>>>-------------! ", this.props.playlist)
         if (playlist.myplaylist) {
+            let tmpVarPhoto = '';
+            let tmpVarUrl = '';
             return(
                 playlist.myplaylist.items.map((listItem, index) => {
+
+                    if (listItem.images.length == 0){
+                        tmpVarPhoto = '';                        
+                    } else {
+                        tmpVarPhoto = listItem.images[0].url;
+                    }
+                    
                     return(
                         // name, images, tracks=> href
+
                         <PlaylistItem
                             key={index}
                             id={listItem.id}
                             name={listItem.name}
-                            image={listItem.images[0].url}
+                            image={tmpVarPhoto}
                             tracks={listItem.tracks.href}
                             tokenPath={ this.getTokenPath() }
                         />
@@ -179,7 +189,13 @@ class Index extends Component {
                             </a>
 
                             <ul id="nav-mobile" className="right hide-on-med-and-down">
-                                <li><Link to={"/crearPlaylist"}>Crear Playlist</Link></li>
+                                <li>
+                                    <Link 
+                                        to={`/crearPlaylist/#access_token=${this.getTokenPath()}`}
+                                    >
+                                        Crear Playlist
+                                    </Link>
+                                </li>
                                 <li style={{ textDecoration: 'underline' }}> {datosUusario.display_name}</li>
                                 <li style={{ textDecoration: 'underline' }}> {datosUusario.display_name}</li>
                                 <li><a href="">Búsqueda de canciones y su información básica</a></li>

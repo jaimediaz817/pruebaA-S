@@ -135,13 +135,13 @@ export const getTracksByPlayList = (path) => {
 const completeAdd = (data) => { return { type: "ADD_PLAYLIST", success: true, payload: data}};
 export const  savePlaylist = (obj) => {
     return (dispatch, getState) => {
-        console.log("token:::: " , sessionStorage.token);
+        console.log("token:::: from create action creator :::: " , obj);
         axios.post('https://api.spotify.com/v1/users/'+ sessionStorage.userId + '/playlists', 
         {
-            name: "obj.name",
-            public: true,
-            collaborative: true,
-            description: "obj.description"
+            "name": obj.name,
+            "public": true,
+            "collaborative": false,
+            "description": obj.description
         },
         { headers: { "Authorization": 'Bearer ' + sessionStorage.token, 'Content-Type': 'application/json' } })
         .then(res =>{

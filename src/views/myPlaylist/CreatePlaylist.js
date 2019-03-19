@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import logoSpotify from '../../assets/spotify_logo.png';
+import M from 'materialize-css';
+
+// L I N K
+import { Link } from 'react-router-dom';
 
 // R E D U X 
 import { connect }            from 'react-redux';
@@ -16,7 +20,7 @@ class CreatePlaylist extends Component {
         this.state = {
             name: '',
             public: true,
-            collaborative: true,
+            collaborative: false,
             description: ''
         }
     }
@@ -24,12 +28,15 @@ class CreatePlaylist extends Component {
     agregarPlayList = (e) =>{
         e.preventDefault();
         const objNew = {
-            name: this.props.name,
+            name: this.state.name,
             public: true,
             collaborative: true,
-            description: this.props.description
+            description: this.state.description
         }
         this.props.savePlaylist(objNew)
+
+        M.toast({html: 'Playlist creada satisfactoriamente, ahora deberá agregar una foto asociada y canciones.'});
+
     }
 
     getNombre = (e) =>{
@@ -37,6 +44,12 @@ class CreatePlaylist extends Component {
     }
     getDescripcion = (e) =>{
         this.setState({description: e.target.value})
+    }
+
+    //  P R O C C E S S    T O K E N
+    getTokenPath() {
+        let path = window.location.href;
+        return path.substring(path.indexOf("#"), path.length);
     }
 
     render() {
@@ -90,6 +103,7 @@ class CreatePlaylist extends Component {
                                             Guardar Playlist
                                         </button>
                                     </form>
+                                    <Link to={`/#access_token=${this.getTokenPath()}`} className="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">keyboard_backspace</i></Link>
                                 </div>
                             </div>
                         </div>
