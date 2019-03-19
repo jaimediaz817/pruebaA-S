@@ -207,9 +207,11 @@ class Index extends Component {
                                         Crear Playlist
                                     </Link>
                                 </li>
-                                <li style={{ textDecoration: 'underline' }}> {datosUusario.display_name}</li>
-                                <li style={{ textDecoration: 'underline' }}> {datosUusario.display_name}</li>
-                                <li><a href="">Búsqueda de canciones y su información básica</a></li>
+                                { !this.props.me?(
+                                    <div>Loading...</div>
+                                ):(
+                                    <li style={{ textDecoration: 'underline' }}> {this.props.me.display_name}</li>
+                                )}                                                                
                             </ul>
                         </div>
                     </div>
