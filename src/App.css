@@ -1,4 +1,7 @@
 
+body.spotify-app {
+	background: #ededed;;
+}
 .Index {
   display: flex;
   /*height: 100vh;*/

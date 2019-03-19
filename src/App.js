@@ -9,8 +9,6 @@ import Player from './views/player/Player';
 import PlaylistDetail from './views/myPlaylist/DetailTrack';
 import FormCrearPlaylist from './views/myPlaylist/CreatePlaylist';
 
-
-
 class App extends Component {
   render() {
     return (
@@ -22,7 +20,6 @@ class App extends Component {
             <Route path="/player/:songId" component={ Player }/>
             <Route path="/tracks/:id" component={ PlaylistDetail }/>
             <Route path="/crearPlaylist" component={ FormCrearPlaylist }/>
-            {/* Here you can put more routes on */}
           </div>
         </Router>
 
