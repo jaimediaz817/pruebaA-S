@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import M from 'materialize-css';
+import sinTrackAsignado from '../../assets/image_no_tracks.png';
 
 // R E D U X 
 import { connect }            from 'react-redux';
@@ -23,21 +25,40 @@ class PlaylistItem extends Component {
 
     }
 
-
+    noTracksMessage() {
+        M.toast({html: 'Aún no tiene asociado canciones para reproducir dentro de su Playlist, agréguelas desde la aplicación.'});
+    }
 
     render() {
-        const { id, name, tracks, image } = this.props;
-        console.log("tracks by my playlist: ", tracks);
+        const { id, name, tracks, image, tieneTracks, tokenPath } = this.props;
+        
         return (
-            <div>
-            <li className="collection-item avatar link-song-item__content">
-                <Link to={"tracks/" + "tracks" } className="link-song-item" onClick={ ()=> this.props.getTracksByPlayList(tracks) }>
-                    {/* Image */}
-                    <img alt="avatar" src={ image } className="circle" />
-                    <p className="song-name"><strong>Nombre de la playList:</strong> { name }</p>
-                </Link>
-            </li>
-            </div>
+
+                
+                <div>   
+                    { tieneTracks ? 
+                    (
+                    <li className="collection-item avatar link-song-item__content" onClick={ ()=> this.props.getTracksByPlayList(tracks) }>
+                        <Link to={ "tracks/" + "tracks" } className="link-song-item">
+                            {/* Image */}
+                            <img alt="avatar" src={ image } className="circle" />
+                            <p className="song-name"><strong>Nombre de la playList:</strong> { name }</p>
+                        </Link>
+                    </li>
+                    )
+                    :(
+                    <li className="collection-item avatar link-song-item__content" onClick={ ()=> this.noTracksMessage() }>
+                        <div className="link-song-item">
+                            {/* Image */}
+                            <img alt="avatar" src={ sinTrackAsignado } className="circle noTrack" />
+                            <p className="song-name"><strong>Nombre de la playList:</strong> { name }</p>
+                            <span class="new badge red">: Sin tracks asignados</span>
+                        </div>
+                    </li>
+                    ) }
+
+                </div>
+            
         );
     }
 }

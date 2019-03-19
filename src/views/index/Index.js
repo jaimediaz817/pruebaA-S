@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 // usar versión minificada de materialize
 import logoSpotify from '../../assets/spotify_logo.png';
 import 'materialize-css/dist/css/materialize.min.css';
+import M from 'materialize-css';
 
 // Spinner
 import Spinner from 'react-spinkit';
@@ -109,14 +110,22 @@ class Index extends Component {
         console.log(">>>>>>>>>>>>>-------------! ", this.props.playlist)
         if (playlist.myplaylist) {
             let tmpVarPhoto = '';
-            let tmpVarUrl = '';
+            let tmpVarUrl = true;
             return(
                 playlist.myplaylist.items.map((listItem, index) => {
 
+                    // validando imágenes asociadas a la playlist
                     if (listItem.images.length == 0){
                         tmpVarPhoto = '';                        
                     } else {
                         tmpVarPhoto = listItem.images[0].url;
+                    }
+
+                    // Validando tracks de mi playlist
+                    if (listItem.tracks.total == 0) {
+                        tmpVarUrl = false;
+                    } else {
+                        tmpVarUrl = true;
                     }
                     
                     return(
@@ -129,6 +138,7 @@ class Index extends Component {
                             image={tmpVarPhoto}
                             tracks={listItem.tracks.href}
                             tokenPath={ this.getTokenPath() }
+                            tieneTracks = { tmpVarUrl }
                         />
                     );
                 })
@@ -137,6 +147,7 @@ class Index extends Component {
     }
 
     buscarCancionSpotify = (songInput) => {
+        M.toast({html: 'Buscando canciones en Spotify, espere un momento por favor...'});
         //this.props.getDataUser();
         console.log("buscar: ", songInput)
         //M.toast({html: 'Operación anulada'});

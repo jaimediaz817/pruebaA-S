@@ -101,6 +101,13 @@ body.spotify-app {
 	color: #00C853;
 }
 
+/* PLAYLIST ITEMS MY PLAYLIST */
+.collection .collection-item.avatar .link-song-item .circle.noTrack {
+	object-fit: cover;
+	width: 45px;
+	height: auto;
+}
+
 
 @media (min-width: 0) {
 
